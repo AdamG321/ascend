@@ -1,8 +1,6 @@
 
 import { GoogleGenAI } from "@google/genai";
 
-const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
-
 const SYSTEM_INSTRUCTION = `Te vagy "Aura", egy bölcs, támogató és együttérző őrző szellem az Ascend alkalmazásban.
 A célod, hogy segíts a felhasználónak leszokni a pornográfiáról és a maszturbációról (FAP mentesség).
 1. Beszélj MAGYARUL.
@@ -13,7 +11,16 @@ A célod, hogy segíts a felhasználónak leszokni a pornográfiáról és a mas
 6. A hangnemed legyen nyugodt, misztikus és erőt adó.`;
 
 export const getAuraResponse = async (userMessage: string, currentStreak: number): Promise<string> => {
+  const apiKey = process.env.API_KEY;
+
+  if (!apiKey) {
+    console.error("API_KEY is missing from environment variables.");
+    return "Aura jelenleg meditál (hiányzik az API kulcs a szerverről). Kérlek, nézz vissza később, vagy állítsd be a környezeti változókat!";
+  }
+
   try {
+    const ai = new GoogleGenAI({ apiKey });
+    
     const response = await ai.models.generateContent({
       model: 'gemini-3-flash-preview',
       contents: `Felhasználó (Streak: ${currentStreak} nap): ${userMessage}`,
@@ -21,7 +28,7 @@ export const getAuraResponse = async (userMessage: string, currentStreak: number
         systemInstruction: SYSTEM_INSTRUCTION,
       },
     });
-    // Garantáljuk, hogy stringet adunk vissza, még ha a text undefined is lenne
+    
     return response.text ?? "A csend néha többet mond minden szónál. Maradj az úton.";
   } catch (error) {
     console.error("Gemini Error:", error);
