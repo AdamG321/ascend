@@ -12,7 +12,7 @@ A célod, hogy segíts a felhasználónak leszokni a pornográfiáról és a mas
 5. A válaszaid legyenek 100 szó alatt, mobilbarát stílusban.
 6. A hangnemed legyen nyugodt, misztikus és erőt adó.`;
 
-export const getAuraResponse = async (userMessage: string, currentStreak: number) => {
+export const getAuraResponse = async (userMessage: string, currentStreak: number): Promise<string> => {
   try {
     const response = await ai.models.generateContent({
       model: 'gemini-3-flash-preview',
@@ -21,7 +21,8 @@ export const getAuraResponse = async (userMessage: string, currentStreak: number
         systemInstruction: SYSTEM_INSTRUCTION,
       },
     });
-    return response.text;
+    // Garantáljuk, hogy stringet adunk vissza, még ha a text undefined is lenne
+    return response.text ?? "A csend néha többet mond minden szónál. Maradj az úton.";
   } catch (error) {
     console.error("Gemini Error:", error);
     return "A fényünk pillanatnyilag elhalványult, de lélekben veled vagyok. Maradj erős.";
