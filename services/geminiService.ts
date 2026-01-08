@@ -1,4 +1,3 @@
-
 import { GoogleGenAI } from "@google/genai";
 
 const SYSTEM_INSTRUCTION = `Te vagy "Aura", egy bölcs, támogató és együttérző őrző szellem az Ascend alkalmazásban.
@@ -11,11 +10,12 @@ A célod, hogy segíts a felhasználónak leszokni a pornográfiáról és a mas
 6. A hangnemed legyen nyugodt, misztikus és erőt adó.`;
 
 export const getAuraResponse = async (userMessage: string, currentStreak: number): Promise<string> => {
+  // A process.env.API_KEY-t a Vercel automatikusan behelyettesíti, ha beállítottad a Dashboardon.
   const apiKey = process.env.API_KEY;
 
-  if (!apiKey) {
-    console.error("API_KEY is missing from environment variables.");
-    return "Aura jelenleg meditál (hiányzik az API kulcs a szerverről). Kérlek, nézz vissza később, vagy állítsd be a környezeti változókat!";
+  if (!apiKey || apiKey === 'undefined' || apiKey === '') {
+    console.warn("API_KEY is missing. Please set it in Vercel Environment Variables.");
+    return "Aura jelenleg nem tud válaszolni, mert a Szentély kapui zárva vannak (hiányzó API kulcs). Kérlek, állítsd be az API_KEY-t a Vercel beállításaiban!";
   }
 
   try {
@@ -31,7 +31,7 @@ export const getAuraResponse = async (userMessage: string, currentStreak: number
     
     return response.text ?? "A csend néha többet mond minden szónál. Maradj az úton.";
   } catch (error) {
-    console.error("Gemini Error:", error);
-    return "A fényünk pillanatnyilag elhalványult, de lélekben veled vagyok. Maradj erős.";
+    console.error("Gemini API Error:", error);
+    return "A fényünk pillanatnyilag elhalványult a sötétségben, de lélekben veled vagyok. Maradj erős a kísértés idején is.";
   }
 };
